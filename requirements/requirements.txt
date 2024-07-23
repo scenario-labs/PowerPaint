@@ -1,9 +1,9 @@
-accelerate
-controlnet-aux==0.0.3
+accelerate==0.30.1
+controlnet-aux==0.0.3  # check if we can use the latest (0.0.9)
 diffusers==0.27.0
-gradio==3.41.0
-mmengine
-opencv-python
-torch
-torchvision
-transformers==4.28.0
+mmengine==0.10.3
+opencv-python==4.9.0.80
+psutil==5.9.8
+torch==2.3.1
+torchvision==0.18.1
+transformers==4.42.4
