@@ -8,5 +8,8 @@ setup(
     version="0.1.1",
     install_requires=REQUIREMENTS,
     packages=["powerpaint"],
+    package_dir= {
+        "powerpaint": "powerpaint",
+    },
     url="https://github.com/scenario-labs/PowerPaint"
 )
