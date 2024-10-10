@@ -28,6 +28,8 @@ from diffusers.utils.torch_utils import is_compiled_module, is_torch_version, ra
 from ..models import BrushNetModel, UNet2DConditionModel
 from ..utils import ImageProjection
 
+from ..vae import tile_decode
+from ..vae import tile_encode
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 
@@ -1336,7 +1338,8 @@ class StableDiffusionPowerPaintBrushNetPipeline(
         # mask_i.save('_mask.png')
         # print(brushnet.dtype)
         conditioning_latents = (
-            self.vae.encode(image.to(device=device, dtype=brushnet.dtype)).latent_dist.sample()
+            # self.vae.encode(image.to(device=device, dtype=brushnet.dtype)).latent_dist.sample()
+            tile_encode(image.to(device=device, dtype=brushnet.dtype), self.vae, var_mean={}, debug=False).latent_dist.sample()
             * self.vae.config.scaling_factor
         )
         mask = torch.nn.functional.interpolate(
@@ -1473,9 +1476,15 @@ class StableDiffusionPowerPaintBrushNetPipeline(
             torch.cuda.empty_cache()
 
         if not output_type == "latent":
-            image = self.vae.decode(latents / self.vae.config.scaling_factor, return_dict=False, generator=generator)[
-                0
-            ]
+            # image = self.vae.decode(latents / self.vae.config.scaling_factor, return_dict=False, generator=generator)[
+            #     0
+            # ]
+            image = tile_decode(
+                latents / self.vae.config.scaling_factor,
+                self.vae,
+                var_mean={},  # multi scale only
+                debug=False,
+            )
             image, has_nsfw_concept = self.run_safety_checker(image, device, prompt_embeds.dtype)
         else:
             image = latents
