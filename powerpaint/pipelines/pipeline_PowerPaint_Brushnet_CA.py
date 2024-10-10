@@ -1343,7 +1343,7 @@ class StableDiffusionPowerPaintBrushNetPipeline(
         #     * self.vae.config.scaling_factor
         # )
 
-
+        self.vae = self.vae.to(device)
         conditioning_latents = [
             tile_encode(image[i: i + 1].to(device=device, dtype=self.vae.dtype), self.vae, var_mean={}, debug=False).latent_dist.sample()
             for i in range(image.shape[0])
