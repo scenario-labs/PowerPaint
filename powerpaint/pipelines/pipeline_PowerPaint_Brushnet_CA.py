@@ -1345,10 +1345,11 @@ class StableDiffusionPowerPaintBrushNetPipeline(
 
 
         conditioning_latents = [
-            tile_encode(image[i: i + 1].to(device=device, dtype=brushnet.dtype), self.vae, var_mean={}, debug=False).latent_dist.sample()
+            tile_encode(image[i: i + 1].to(device=device, dtype=self.vae.dtype), self.vae, var_mean={}, debug=False).latent_dist.sample()
             for i in range(image.shape[0])
         ]
         conditioning_latents = torch.cat(conditioning_latents, dim=0) * self.vae.config.scaling_factor
+        conditioning_latents = conditioning_latents.to(device=device, dtype=brushnet.dtype)
 
         mask = torch.nn.functional.interpolate(
             original_mask, size=(conditioning_latents.shape[-2], conditioning_latents.shape[-1])
