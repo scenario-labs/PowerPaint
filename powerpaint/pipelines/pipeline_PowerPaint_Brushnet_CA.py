@@ -633,7 +633,8 @@ class StableDiffusionPowerPaintBrushNetPipeline(
 
         print("prompt embeds", prompt_embeds)
         print("Negative prompt embeds", negative_prompt_embeds)
-        prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
+        if negative_prompt_embeds is not None:
+            prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
 
         return prompt_embeds
 
