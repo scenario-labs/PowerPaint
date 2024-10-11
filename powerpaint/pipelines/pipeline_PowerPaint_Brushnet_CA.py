@@ -588,12 +588,9 @@ class StableDiffusionPowerPaintBrushNetPipeline(
             else:
                 uncond_tokens = negative_prompt
 
-            print("uncond_tokens", uncond_tokens)
             # textual inversion: process multi-vector tokens if necessary
             if isinstance(self, TextualInversionLoaderMixin):
                 uncond_tokens = self.maybe_convert_prompt(uncond_tokens, self.tokenizer)
-
-            print("uncond tokens 2", uncond_tokens)
 
             max_length = prompt_embeds.shape[1]
             uncond_input = self.tokenizer(
@@ -603,7 +600,7 @@ class StableDiffusionPowerPaintBrushNetPipeline(
                 truncation=True,
                 return_tensors="pt",
             )
-            print("neg: ", uncond_input.input_ids)
+            # print("neg: ", uncond_input.input_ids)
 
             if hasattr(self.text_encoder.config, "use_attention_mask") and self.text_encoder.config.use_attention_mask:
                 attention_mask = uncond_input.attention_mask.to(device)
@@ -614,11 +611,9 @@ class StableDiffusionPowerPaintBrushNetPipeline(
                 uncond_input.input_ids.to(device),
                 attention_mask=attention_mask,
             )
-            print("negative prompt embeds", negative_prompt_embeds)
             negative_prompt_embeds = negative_prompt_embeds[0]
 
         if do_classifier_free_guidance:
-            print("do classifier free")
             # duplicate unconditional embeddings for each generation per prompt, using mps friendly method
             seq_len = negative_prompt_embeds.shape[1]
 
@@ -631,8 +626,6 @@ class StableDiffusionPowerPaintBrushNetPipeline(
             # Retrieve the original scale by scaling back the LoRA layers
             unscale_lora_layers(self.text_encoder, lora_scale)
 
-        print("prompt embeds", prompt_embeds)
-        print("Negative prompt embeds", negative_prompt_embeds)
         if negative_prompt_embeds is not None:
             prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
 
